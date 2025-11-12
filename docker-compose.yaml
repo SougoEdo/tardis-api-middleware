@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  download-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tardis-download-service
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount datasets directory to persist downloaded data
+      - ./datasets:/app/datasets
+      # Mount database to persist job history
+      - ./data:/app/data
+      # Mount logs directory
+      - ./logs:/app/logs
+    environment:
+      # API Configuration
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - API_TOKEN=${API_TOKEN:-}
+      
+      # Tardis API Key (REQUIRED)
+      - TARDIS_API_KEY=${TARDIS_API_KEY}
+      
+      # Telegram Configuration (REQUIRED)
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      
+      # Database
+      - DATABASE_URL=sqlite+aiosqlite:////app/data/downloads.db
+      
+      # Download Configuration
+      - DEFAULT_OUTPUT_PATH=/app/datasets
+      
+      # Allowed users (comma-separated)
+      - ALLOWED_USERS=${ALLOWED_USERS:-}
+    
+    networks:
+      - download-network
+    
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  download-network:
+    driver: bridge
+
+volumes:
+  datasets:
+  data:
+  logs:
