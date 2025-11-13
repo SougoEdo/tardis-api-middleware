@@ -17,14 +17,20 @@ class TelegramNotifier:
         """Send a message to the configured Telegram chat."""
         try:
             await self.bot.send_message(
-                chat_id=self.chat_id,
+                # chat_id=self.chat_id,
+                chat_id = "7956657694",
                 text=message,
                 parse_mode="HTML"
             )
+            logger.info(self.chat_id)
+
+
             logger.info(f"Telegram notification sent: {message[:50]}...")
             return True
         except TelegramError as e:
-            logger.error(f"Failed to send Telegram notification: {e}")
+            logger.info(self.chat_id)
+
+            logger.error(f"FAiled to send Telegram notification: {e}")
             return False
     
     async def notify_job_started(

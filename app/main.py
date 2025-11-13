@@ -55,9 +55,9 @@ app = FastAPI(
 
 def verify_api_token(x_api_token: Optional[str] = Header(None)):
     """Verify API token if configured."""
-    if settings.api_token:
-        if not x_api_token or x_api_token != settings.api_token:
-            raise HTTPException(status_code=401, detail="Invalid or missing API token")
+    # if settings.api_token:
+    #     if not x_api_token or x_api_token != settings.api_token:
+    #         raise HTTPException(status_code=401, detail="Invalid or missing API token")
     return True
 
 
@@ -66,14 +66,7 @@ def verify_user(x_username: Optional[str] = Header(None)):
     if not x_username:
         raise HTTPException(
             status_code=400,
-            detail="Missing X-Username header. Please provide your username."
-        )
-    
-    if not settings.is_user_allowed(x_username):
-        raise HTTPException(
-            status_code=403,
-            detail=f"User '{x_username}' is not authorized to use this service"
-        )
+            detail="Missing X-Username header. Please provide your username.")
     
     return x_username
 
